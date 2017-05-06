@@ -18,11 +18,12 @@ sealed abstract class Index(file: File){
 
 }
 
-case class FileIndex(private val file: File) extends Index(file) {
+case class FileIndex(private val file: File) extends Index(file){
   override val handler: File =  {
     if(!file.exists || file.isDirectory) throw NotAFileException(file)
     file
   }
+  def manifesto(implicit chunkSize: Int) = FileManifesto(handler, chunkSize)
 }
 
 object FileIndex{
@@ -50,21 +51,6 @@ object DirectoryIndex{
 
 
 
-object Main extends App{
 
-
-  val index = DirectoryIndex(".")
-  println(index.handler.getAbsolutePath)
-  println(index.subFiles)
-  println(index.subDirectories)
-  println(index)
-  println("search for .")
-
-  for (index <- index.find(".")) println(index.handler.getAbsolutePath)
-  println("search for .idea")
-  for (index <- index.find("Index.scala")) println(index.handler.getAbsolutePath)
-
-
-}
 
 
