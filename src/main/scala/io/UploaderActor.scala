@@ -10,9 +10,9 @@ class UploaderActor(downloaderActor: ActorRef) extends Actor{
 
 
   override def receive: PartialFunction[Any, Unit] = {
-    case list: List[Any] =>
+    case list: List[Chunk] =>
+      println(s"Sending ${list.length} chunks")
       list.foreach{ elem =>
-        println(downloaderActor.path)
         downloaderActor ! elem}
 
   }

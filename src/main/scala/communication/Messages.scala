@@ -10,12 +10,18 @@ import scala.math.ceil
   * Created by marcin on 5/8/17.
   */
 case class Request(filename: String) extends Serializable
-case class Confirmation(system: String, host: String, port: Int, downloaderName: String) extends Serializable
+case class Confirmation(fileManifesto: FileManifesto) extends Serializable
 
 
 
-case class FileManifesto(private val file: File, implicit val chunkSize: Int) extends Serializable{
+case class FileManifesto(private val file: File, implicit val chunkSize: Int, newName: String="") extends Serializable{
   def chunkCount: Int = Chunkifier.chunksCount(file, chunkSize)
-  def name: String = file.getName
+  def name: String = newName match {
+    case "" => file.getName
+    case _ => newName
+  }
+
+
 
 }
+

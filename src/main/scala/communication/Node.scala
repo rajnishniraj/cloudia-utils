@@ -3,10 +3,8 @@ package communication
 import java.io.File
 
 import akka.actor._
-import io.{DownloaderActor, UploaderActor}
-import util.Tracer
+import io.{Chunkifier, DownloaderActor, UploaderActor}
 
-import scala.concurrent.duration.FiniteDuration
 
 /**
   * Created by marcin on 5/8/17.
@@ -21,17 +19,17 @@ class Node(implicit val chunkSize: Int, implicit val host: String, implicit val 
       sender ! FileManifesto(new File(filename), chunkSize)
 
     case fileManifesto: FileManifesto =>
-      println(s"Received manifesto from ${sender().path}. Sending confirmation.")
-      val downloader = context.system.actorOf(Props(classOf[DownloaderActor], fileManifesto, sender()), name = "downloader")
+      println(s"Received manifesto from ${sender.path}. Sending confirmation.")
+      val downloader = context.system.actorOf(Props(classOf[DownloaderActor], fileManifesto), name = "downloader")
       println(downloader.path)
-      val confirmation = Confirmation(context.system.name, host, port, "downloader")
-      downloader ! confirmation
+      val confirmation = Confirmation(fileManifesto)
+      sender.tell(confirmation, downloader)
 
-    case Confirmation(system, host, port, downloaderName) =>
+    case Confirmation(FileManifesto(file, fileChunkSize, _))=>
       println(s"Received confirmation from ${sender().path}. Preparing uploader.")
       val uploader = context.system.actorOf(
         Props(classOf[UploaderActor], sender()), name = "uploader")
-      uploader ! List(1, 2, 3, 4)
+      uploader ! Chunkifier(fileChunkSize, file)
 
     case selection: ActorSelection =>
       selection ! Request(".gitignore")
