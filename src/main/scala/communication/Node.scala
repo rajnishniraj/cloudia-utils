@@ -11,7 +11,7 @@ import scala.concurrent.duration.FiniteDuration
 /**
   * Created by marcin on 5/8/17.
   */
-class Cloudia(implicit val chunkSize: Long, implicit val host: String, implicit val port: Int) extends Actor {
+class Node(implicit val chunkSize: Int, implicit val host: String, implicit val port: Int) extends Actor {
 
 
   override def receive: Receive = {
@@ -22,7 +22,7 @@ class Cloudia(implicit val chunkSize: Long, implicit val host: String, implicit 
 
     case fileManifesto: FileManifesto =>
       println(s"Received manifesto from ${sender().path}. Sending confirmation.")
-      val downloader = context.system.actorOf(Props(classOf[DownloaderActor], sender()), name = "downloader")
+      val downloader = context.system.actorOf(Props(classOf[DownloaderActor], fileManifesto, sender()), name = "downloader")
       println(downloader.path)
       val confirmation = Confirmation(context.system.name, host, port, "downloader")
       downloader ! confirmation

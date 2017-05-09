@@ -5,18 +5,24 @@ package io
   */
 
 import akka.actor._
-import communication.Confirmation
+import communication._
 
-class DownloaderActor(remoteWaiter: ActorRef) extends Actor {
+import scala.collection.mutable.ListBuffer
+
+class DownloaderActor(manifesto: FileManifesto, remoteWaiter: ActorRef) extends Actor {
+  val chunks: ListBuffer[Chunk] = ListBuffer()
 
 
   override def receive: PartialFunction[Any, Unit] = {
-    case chunk: Chunk => println("received chunk")
+
     case confirmation: Confirmation =>
       println(s"Sending confirmation to ${remoteWaiter.path}")
       remoteWaiter ! confirmation
     case msg =>
       println(s"Received $msg")
+    case chunk: Chunk =>
+      println("received chunk")
+      if(!chunks.exists(_.id == chunk.id)) chunks.insert(1, chunk)
 
 
   }
