@@ -4,7 +4,7 @@ package io
   * Created by marcin on 5/7/17.
   */
 
-import java.io.{BufferedWriter, File, FileWriter}
+import java.io._
 
 import akka.actor._
 import communication._
@@ -48,12 +48,10 @@ class DownloaderActor(manifesto: FileManifesto) extends Actor {
     }
     println(s"Trying to build $name")
     val newFile = new File(name)
-    val writer = new BufferedWriter(new FileWriter(newFile))
+    val writer = new BufferedOutputStream(new FileOutputStream(newFile))
     for(i <- 0 until manifesto.chunkCount){
-      writer.write(chunks.filter(c => c.id == i).head.content.utf8String)
+      writer.write(chunks.filter(c => c.id == i).head.content)
     }
     writer.close()
-
-
   }
 }

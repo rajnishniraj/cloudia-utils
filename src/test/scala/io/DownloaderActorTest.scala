@@ -22,13 +22,11 @@ class DownloaderActorTest extends FunSuite with BeforeAndAfterEach {
   }
 
   test("sendTest"){
-    implicit val chunkSize = 10
-    val file = new File("testfiles/litwo.txt")
-    val manifesto = FileManifesto(file, chunkSize, "testfiles/litwo2.txt")
+    implicit val chunkSize = 10240
+    val file = new File("testfiles/kierwa")
+    val manifesto = FileManifesto(file, chunkSize, "testfiles/korwo")
     val downloader = system.actorOf(Props(classOf[DownloaderActor], manifesto))
     val uploader = system.actorOf(Props(classOf[UploaderActor], downloader))
     uploader ! Chunkifier(chunkSize, file)
-
-
   }
 }
