@@ -1,4 +1,9 @@
+package index
+
 import java.io.File
+
+import util.{NotADirectoryException, NotAFileException}
+import communication.FileManifesto
 
 /**
   * Created by marcin on 5/4/17.
@@ -10,7 +15,7 @@ sealed abstract class Index(file: File){
     this(new File(path))
   }
   val handler: File
-  override def toString: String = s"Index of ${handler.getAbsolutePath}"
+  override def toString: String = s"index.Index of ${handler.getAbsolutePath}"
   def find(name: String): List[_ <: Index] = {
 
    List(this).filter(_.handler.getName==name)

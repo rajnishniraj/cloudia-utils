@@ -5,9 +5,19 @@ package io
   */
 
 import akka.actor._
-class Downloader extends Actor {
-  override def receive = {
-    case msg: String =>
-      println(s"received $msg")
+import communication.Confirmation
+
+class DownloaderActor(remoteWaiter: ActorRef) extends Actor {
+
+
+  override def receive: PartialFunction[Any, Unit] = {
+    case chunk: Chunk => println("received chunk")
+    case confirmation: Confirmation =>
+      println(s"Sending confirmation to ${remoteWaiter.path}")
+      remoteWaiter ! confirmation
+    case msg =>
+      println(s"Received $msg")
+
+
   }
 }
