@@ -9,11 +9,12 @@ import akka.pattern.ask
 import akka.util.Timeout
 
 import scala.concurrent.Await
-import communication._
-
 import scala.concurrent.duration._
 import scala.collection.mutable.ListBuffer
 import scala.util.Random
+import scala.util.control.Exception.ignoring
+
+import communication._
 
 class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration: FiniteDuration) extends Actor {
   val uploaders: ListBuffer[ActorRef] = ListBuffer()
@@ -43,7 +44,9 @@ class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration
         println(s"${builder.missingChunks} are missing")
         val randomUploader = Random.shuffle(uploaders).head
         builder.missingChunks.foreach { i =>
-          builder.accept(Await.result((randomUploader ? i).mapTo[Chunk], timeoutDuration))
+          ignoring(classOf[java.util.concurrent.TimeoutException]) {
+            builder.accept(Await.result((randomUploader ? i).mapTo[Chunk], timeoutDuration))
+          }
         }
       }
   }

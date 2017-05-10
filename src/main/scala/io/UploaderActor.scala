@@ -16,7 +16,6 @@ class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto) ext
       chunk =>
         println(s"sending chunk ${chunk.id}")
         downloaderActor ! chunk
-
     }
     downloaderActor ! ReceiveTimeout
   }
