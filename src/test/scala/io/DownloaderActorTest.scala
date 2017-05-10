@@ -6,6 +6,8 @@ import akka.actor.{ActorSystem, Props}
 import communication.FileManifesto
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
 
+
+
 /**
   * Created by marcin on 5/9/17.
   */
@@ -17,16 +19,19 @@ class DownloaderActorTest extends FunSuite with BeforeAndAfterEach {
   }
 
   override def afterEach() {
-    system.terminate()
+
+
+//    system.terminate()
 
   }
 
   test("sendTest"){
     implicit val chunkSize = 10240
-    val file = new File(".gitignore")
-    val manifesto = FileManifesto(file, chunkSize, "testfiles/.gitignore")
+    val file = new File("build.sbt")
+    val manifesto = FileManifesto(file, chunkSize, "testfiles/build.sbt")
     val downloader = system.actorOf(Props(classOf[DownloaderActor], manifesto))
     val uploader = system.actorOf(Props(classOf[UploaderActor], downloader, manifesto))
-//    uploader ! Chunkifier(chunkSize, file)
+
+
   }
 }

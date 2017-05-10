@@ -9,8 +9,6 @@ import scala.io.Source
 import scala.math.ceil
 
 
-
-
 /**
   * Created by marcin on 5/7/17.
   */
@@ -22,13 +20,12 @@ object Chunkifier {
   def apply(implicit chunkSize: Int, file: File): List[Chunk] = {
     val src: Array[Byte] = Files.readAllBytes(file.toPath)
     val chunks = for (i <- 0 until chunksCount(file, chunkSize))
-      yield Chunk(i, trySlice(src, i*chunkSize, (i+1)*chunkSize ))
+      yield Chunk(i, trySlice(src, i * chunkSize, (i + 1) * chunkSize))
     chunks.toList
-
 
   }
 
-  def chunksCount(file: File, chunkSize:Int): Int =
+  def chunksCount(file: File, chunkSize: Int): Int =
     ceil(file.length.toDouble / chunkSize).toInt
 
   private def trySlice(implicit src: Array[Byte], from: Int, to: Int) = {
@@ -38,7 +35,7 @@ object Chunkifier {
     catch {
       case e: Exception =>
         println(s"Caught $e")
-       src.slice(from, src.length)
+        src.slice(from, src.length)
     }
   }
 }

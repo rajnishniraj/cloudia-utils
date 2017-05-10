@@ -4,59 +4,49 @@ package io
   * Created by marcin on 5/7/17.
   */
 
-import java.io._
-
 import akka.actor._
+import akka.pattern.ask
+import akka.util.Timeout
+
+import scala.concurrent.Await
 import communication._
-import util.ChunkNotFoundException
 
+import scala.concurrent.duration._
 import scala.collection.mutable.ListBuffer
+import scala.util.Random
 
-class DownloaderActor(manifesto: FileManifesto) extends Actor {
-  val chunksBuffer: ListBuffer[Chunk] = ListBuffer()
+class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration: FiniteDuration) extends Actor {
+  val uploaders: ListBuffer[ActorRef] = ListBuffer()
+  val builder = new FileBuilder(fileManifesto)
+  implicit val timeout = Timeout(timeoutDuration)
+
+  //  println(s"manifesto.chunksize = ${fileManifesto.chunkSize}")
+  //  println(s"manifesto.chunkcount = ${fileManifesto.chunkCount}")
 
   override def receive: PartialFunction[Any, Unit] = {
 
     case chunk: Chunk =>
-      println(s"received chunk ${chunk.id}")
-      if (!chunksBuffer.exists(_.id == chunk.id)) chunksBuffer += chunk
-      if (chunksBuffer.length == manifesto.chunkCount) {
-        try {
-          build()
-        } catch {
-          case ChunkNotFoundException(chunkId) => println("Building Error!")
+      if (!uploaders.contains(sender)) uploaders += sender
+      //      println(s"received chunk ${chunk.id}")
+      builder.accept(chunk)
+      context.setReceiveTimeout(timeoutDuration)
+
+    case ReceiveTimeout =>
+      println("timeout received")
+      if (builder.missingChunks.isEmpty) {
+        println("ready to build")
+        context.setReceiveTimeout(Duration.Undefined)
+        builder.build()
+        context.stop(self)
+      } else if (uploaders.nonEmpty) {
+        println("not ready to build yet")
+        println(s"${builder.missingChunks} are missing")
+        val randomUploader = Random.shuffle(uploaders).head
+        builder.missingChunks.foreach { i =>
+          builder.accept(Await.result((randomUploader ? i).mapTo[Chunk], timeoutDuration))
         }
       }
-    case msg =>
-      println(s"Received $msg")
-
-
   }
 
-  def build(): Unit = {
-    println("Builder started")
-    val chunks = chunksBuffer.toList
-    println("Chunks listified")
-    var name = manifesto.name
 
-    while (new File(name).exists()) {
-      name += "(1)"
-    }
-    println(s"Trying to build $name")
-    val newFile = new File(name)
-    val writer = new BufferedOutputStream(new FileOutputStream(newFile))
-
-
-    for (i <- 0 until manifesto.chunkCount) {
-      try {
-        writer.write(chunks.filter(c => c.id == i).head.content)
-      } catch {
-        case e: java.util.NoSuchElementException =>
-          println(e)
-          newFile.delete()
-          throw ChunkNotFoundException(i)
-      }
-    }
-    writer.close()
-  }
 }
