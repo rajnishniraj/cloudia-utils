@@ -14,7 +14,7 @@ case class Confirmation(fileManifesto: FileManifesto) extends Serializable
 
 
 
-case class FileManifesto(private val file: File, implicit val chunkSize: Int, newName: String="") extends Serializable{
+case class FileManifesto(file: File, implicit val chunkSize: Int, newName: String="") extends Serializable{
   def chunkCount: Int = Chunkifier.chunksCount(file, chunkSize)
   def name: String = newName match {
     case "" => file.getName

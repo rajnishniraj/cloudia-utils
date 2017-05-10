@@ -7,4 +7,5 @@ import java.io.File
   */
 case class NotADirectoryException(file: File) extends Exception
 case class NotAFileException(file: File) extends Exception
+case class ChunkNotFoundException(chunkId: Int) extends Exception
 

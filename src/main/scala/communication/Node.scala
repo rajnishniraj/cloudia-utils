@@ -25,11 +25,11 @@ class Node(implicit val chunkSize: Int, implicit val host: String, implicit val 
       val confirmation = Confirmation(fileManifesto)
       sender.tell(confirmation, downloader)
 
-    case Confirmation(FileManifesto(file, fileChunkSize, _))=>
+    case Confirmation(fileManifesto)=>
       println(s"Received confirmation from ${sender().path}. Preparing uploader.")
       val uploader = context.system.actorOf(
-        Props(classOf[UploaderActor], sender()), name = "uploader")
-      uploader ! Chunkifier(fileChunkSize, file)
+        Props(classOf[UploaderActor], sender, fileManifesto), name = "uploader")
+
 
     case selection: ActorSelection =>
       selection ! Request(".gitignore")
