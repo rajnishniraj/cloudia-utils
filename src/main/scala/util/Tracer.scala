@@ -9,7 +9,6 @@ object Tracer {
   def actorAt(actorSystem: ActorSystem, system :String, host:String, port:Int, downloaderName:String): ActorSelection = {
     val protocol = "akka.tcp"
     val address = s"$protocol://$system@$host:$port/user/$downloaderName"
-    println(s"Tracer: $address")
     actorSystem.actorSelection(address)
   }
 

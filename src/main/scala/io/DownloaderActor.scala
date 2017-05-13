@@ -20,28 +20,23 @@ class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration
   val uploaders: ListBuffer[ActorRef] = ListBuffer()
   val builder = new FileBuilder(fileManifesto)
   implicit val timeout = Timeout(timeoutDuration)
+  val spokesman: ActorSelection = context.system.actorSelection("user/spokesman")
+//  spokesman ! s"manifesto.chunksize = ${fileManifesto.chunkSize}"
 
-  //  println(s"manifesto.chunksize = ${fileManifesto.chunkSize}")
-  //  println(s"manifesto.chunkcount = ${fileManifesto.chunkCount}")
 
   override def receive: PartialFunction[Any, Unit] = {
 
     case chunk: Chunk =>
       if (!uploaders.contains(sender)) uploaders += sender
-      //      println(s"received chunk ${chunk.id}")
       builder.accept(chunk)
       context.setReceiveTimeout(timeoutDuration)
 
     case ReceiveTimeout =>
-      println("timeout received")
       if (builder.missingChunks.isEmpty) {
-        println("ready to build")
         context.setReceiveTimeout(Duration.Undefined)
         builder.build()
         context.stop(self)
       } else if (uploaders.nonEmpty) {
-        println("not ready to build yet")
-        println(s"${builder.missingChunks} are missing")
         val randomUploader = Random.shuffle(uploaders).head
         builder.missingChunks.foreach { i =>
           ignoring(classOf[java.util.concurrent.TimeoutException]) {

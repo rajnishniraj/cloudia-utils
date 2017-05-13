@@ -1,10 +1,13 @@
 package io
 
 import java.io.File
+import java.util.concurrent.TimeUnit.SECONDS
 
 import akka.actor.{ActorSystem, Props}
-import communication.FileManifesto
+import communication.{FileManifesto, Node}
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
+
+import scala.concurrent.duration.FiniteDuration
 
 
 
@@ -29,7 +32,9 @@ class DownloaderActorTest extends FunSuite with BeforeAndAfterEach {
     implicit val chunkSize = 10240
     val file = new File("build.sbt")
     val manifesto = FileManifesto(file, chunkSize, "testfiles/build.sbt")
-    val downloader = system.actorOf(Props(classOf[DownloaderActor], manifesto))
+    implicit val timeout: FiniteDuration = FiniteDuration(1, SECONDS)
+
+    val downloader = system.actorOf(Props(classOf[DownloaderActor], manifesto, timeout))
     val uploader = system.actorOf(Props(classOf[UploaderActor], downloader, manifesto))
 
 

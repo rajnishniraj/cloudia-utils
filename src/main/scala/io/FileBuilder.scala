@@ -30,10 +30,7 @@ class FileBuilder(fileManifesto: FileManifesto) {
 
 
   def build(): Unit = {
-    //    println(s"build: manifesto.chunkcount = ${fileManifesto.chunkCount}")
-    //    println(s"build: chunks = ${chunks.length}")
     var name = fileManifesto.name
-    println(s"Trying to build $name")
     val newFile = new File(name)
     val writer = new BufferedOutputStream(new FileOutputStream(newFile))
 

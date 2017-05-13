@@ -14,7 +14,6 @@ class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto) ext
   override def preStart(): Unit = {
     Chunkifier(fileManifesto.chunkSize, fileManifesto.file).foreach {
       chunk =>
-        println(s"sending chunk ${chunk.id}")
         downloaderActor ! chunk
     }
     downloaderActor ! ReceiveTimeout
@@ -23,7 +22,6 @@ class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto) ext
 
   override def receive: PartialFunction[Any, Unit] = {
     case missingChunkId: Int =>
-      println(s"Sending missing chunk #$missingChunkId")
       sender ! Chunkifier(fileManifesto.chunkSize, fileManifesto.file)(missingChunkId)
   }
 
