@@ -9,7 +9,7 @@ import scala.math.ceil
 /**
   * Created by marcin on 5/8/17.
   */
-case class Request(filename: String) extends Serializable
+case class Request[T](element: T) extends Serializable
 
 case class Confirmation(fileManifesto: FileManifesto) extends Serializable
 

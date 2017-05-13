@@ -1,7 +1,7 @@
 package io
 
 import akka.actor._
-import communication.FileManifesto
+import communication.{FileManifesto, Request}
 
 /**
   * Created by marcin on 5/7/17.
@@ -21,7 +21,7 @@ class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto) ext
 
 
   override def receive: PartialFunction[Any, Unit] = {
-    case missingChunkId: Int =>
+    case Request(missingChunkId: Int) =>
       sender ! Chunkifier(fileManifesto.chunkSize, fileManifesto.file)(missingChunkId)
   }
 

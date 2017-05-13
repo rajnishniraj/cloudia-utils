@@ -35,12 +35,15 @@ class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration
       if (builder.missingChunks.isEmpty) {
         context.setReceiveTimeout(Duration.Undefined)
         builder.build()
-        context.stop(self)
+        uploaders.foreach(_ ! PoisonPill)
+        self ! PoisonPill
       } else if (uploaders.nonEmpty) {
         val randomUploader = Random.shuffle(uploaders).head
-        builder.missingChunks.foreach { i =>
+        builder.missingChunks.foreach { chunkId =>
           ignoring(classOf[java.util.concurrent.TimeoutException]) {
-            builder.accept(Await.result((randomUploader ? i).mapTo[Chunk], timeoutDuration))
+            builder.accept(Await.result(
+              (randomUploader ? Request(chunkId))
+                .mapTo[Chunk], timeoutDuration))
           }
         }
       }

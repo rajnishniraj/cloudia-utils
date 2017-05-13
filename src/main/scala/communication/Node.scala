@@ -21,7 +21,7 @@ class Node(implicit val chunkSize: Int,
 
   override def receive: Receive = {
 
-    case Request(filename) =>
+    case Request(filename: String) =>
       sender ! FileManifesto(new File(filename), chunkSize, filename + "(1)")
 
     case fileManifesto: FileManifesto =>
