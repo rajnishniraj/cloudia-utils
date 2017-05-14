@@ -12,10 +12,7 @@ import java.util.concurrent.TimeUnit.SECONDS
 /**
   * Created by marcin on 5/8/17.
   */
-class Node(implicit val chunkSize: Int,
-           implicit val host: String,
-           implicit val port: Int
-          ) extends Actor {
+class Node(chunkSize: Int) extends Actor {
   implicit val timeout: FiniteDuration = FiniteDuration(1, SECONDS)
   val spokesman: ActorRef = context.system.actorOf(Props[Spokesman], name = "spokesman")
 
