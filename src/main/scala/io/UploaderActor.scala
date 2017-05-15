@@ -7,10 +7,9 @@ import communication.{FileManifesto, Request}
   * Created by marcin on 5/7/17.
   */
 
-class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto) extends Actor {
-  //  println(s"manifesto.chunksize = ${fileManifesto.chunkSize}")
-  //  println(s"manifesto.chunkcount = ${fileManifesto.chunkCount}")
-
+private class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto)(implicit homeDirPath: String) extends Actor {
+  println("Uploader")
+  println(homeDirPath)
   override def preStart(): Unit = {
     Chunkifier(fileManifesto.chunkSize, fileManifesto.file).foreach {
       chunk =>
@@ -25,4 +24,11 @@ class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto) ext
       sender ! Chunkifier(fileManifesto.chunkSize, fileManifesto.file)(missingChunkId)
   }
 
+}
+
+object UploaderActor{
+  def props(downloaderActor: ActorRef, fileManifesto: FileManifesto)
+           (implicit homeDirPath:String):Props ={
+    Props(new UploaderActor(downloaderActor, fileManifesto))
+  }
 }

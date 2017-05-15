@@ -16,7 +16,11 @@ import scala.util.control.Exception.ignoring
 
 import communication._
 
-class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration: FiniteDuration) extends Actor {
+private class DownloaderActor(fileManifesto: FileManifesto, timeoutDuration: FiniteDuration)
+(implicit homeDirPath: String)
+  extends Actor {
+  println("Downloader")
+  println(homeDirPath)
   val uploaders: ListBuffer[ActorRef] = ListBuffer()
   val builder = new FileBuilder(fileManifesto)
   implicit val timeout = Timeout(timeoutDuration)
@@ -48,6 +52,13 @@ class DownloaderActor(fileManifesto: FileManifesto, implicit val timeoutDuration
         }
       }
   }
+}
 
+object DownloaderActor{
+  def props(fileManifesto: FileManifesto, timeoutDuration: FiniteDuration)
+           (implicit homeDirPath: String): Props = {
+    Props(new DownloaderActor(fileManifesto, timeoutDuration))
+
+  }
 
 }
