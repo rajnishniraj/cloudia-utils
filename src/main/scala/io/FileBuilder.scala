@@ -9,7 +9,7 @@ import scala.collection.mutable.ListBuffer
 /**
   * Created by marcin on 5/10/17.
   */
-class FileBuilder(fileManifesto: FileManifesto) {
+class FileBuilder(fileManifesto: FileManifesto)(implicit homeDirPath: String) {
 
   private val chunksBuffer: ListBuffer[Chunk] = ListBuffer()
 
@@ -30,14 +30,16 @@ class FileBuilder(fileManifesto: FileManifesto) {
 
 
   def build(): Unit = {
+    println("Building started")
     var name = fileManifesto.name
-    val newFile = new File(name)
+    val newFile = new File(homeDirPath+"/"+name)
     val writer = new BufferedOutputStream(new FileOutputStream(newFile))
 
     (0 until fileManifesto.chunkCount)
       .foreach { i => writer.write(chunks.filter(_.id == i).head.content) }
 
     writer.close()
+    println("Building ended")
   }
 
 }

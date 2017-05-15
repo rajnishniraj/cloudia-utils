@@ -19,24 +19,23 @@ class Node(chunkSize: Int, implicit val homeDirPath: String) extends Actor {
   override def receive: Receive = {
 
     case Request(filename: String) =>
-      sender ! FileManifesto(new File(filename), chunkSize)
+      val path = homeDirPath + "/" + filename
+      sender ! FileManifesto(new File(path), chunkSize)
 
     case fileManifesto: FileManifesto =>
-      val downloader = context.system.actorOf(DownloaderActor.props(fileManifesto,timeout), name = "downloader")
+      val downloader = context.system.actorOf(DownloaderActor.props(fileManifesto,timeout))
       println(downloader.path)
       val confirmation = Confirmation(fileManifesto)
       sender.tell(confirmation, downloader)
 
     case Confirmation(fileManifesto) =>
       val uploader = context.system.actorOf(
-        UploaderActor.props(sender, fileManifesto), name = "uploader")
+        UploaderActor.props(sender, fileManifesto))
 
 
     case selection: ActorSelection =>
-      selection ! Request(".gitignore")
+      selection ! Request("test3/04.mkv")
 
-    case _ =>
-      println("WTF")
 
 
   }

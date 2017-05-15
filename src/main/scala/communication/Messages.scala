@@ -13,12 +13,9 @@ case class Request[T](element: T) extends Serializable
 
 case class Confirmation(fileManifesto: FileManifesto) extends Serializable
 
-case class FileManifesto(file: File, implicit val chunkSize: Int, newName: String = "") extends Serializable {
+case class FileManifesto(file: File, implicit val chunkSize: Int) extends Serializable {
   val chunkCount: Int = Chunkifier.chunksCount(file, chunkSize)
-  val name: String = newName match {
-    case "" => file.getName
-    case _ => newName
-  }
+  val name: String = file.getName
 
 
 }
