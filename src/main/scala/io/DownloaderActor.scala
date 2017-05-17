@@ -19,8 +19,6 @@ import communication._
 private class DownloaderActor(fileManifesto: FileManifesto, timeoutDuration: FiniteDuration)
 (implicit homeDirPath: String)
   extends Actor {
-  println("Downloader")
-  println(homeDirPath)
   val uploaders: ListBuffer[ActorRef] = ListBuffer()
   val builder = new FileBuilder(fileManifesto)
   implicit val timeout = Timeout(timeoutDuration)

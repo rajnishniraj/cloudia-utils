@@ -34,7 +34,6 @@ object Chunkifier {
     }
     catch {
       case e: Exception =>
-        println(s"Caught $e")
         src.slice(from, src.length)
     }
   }

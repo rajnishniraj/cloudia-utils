@@ -8,10 +8,8 @@ import communication.{FileManifesto, Request}
   */
 
 private class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto)(implicit homeDirPath: String) extends Actor {
-  println("Uploader")
-  println(homeDirPath)
   override def preStart(): Unit = {
-    Chunkifier(fileManifesto.chunkSize, fileManifesto.file).foreach {
+    Chunkifier(fileManifesto.chunkSize, fileManifesto.fileIndex.handler).foreach {
       chunk =>
         downloaderActor ! chunk
     }
@@ -21,7 +19,7 @@ private class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManife
 
   override def receive: PartialFunction[Any, Unit] = {
     case Request(missingChunkId: Int) =>
-      sender ! Chunkifier(fileManifesto.chunkSize, fileManifesto.file)(missingChunkId)
+      sender ! Chunkifier(fileManifesto.chunkSize, fileManifesto.fileIndex.handler)(missingChunkId)
   }
 
 }

@@ -1,6 +1,7 @@
 package index
 
 import java.io.File
+import java.nio.file.Paths
 
 import util.{NotADirectoryException, NotAFileException}
 import communication.FileManifesto
@@ -10,12 +11,13 @@ import communication.FileManifesto
   */
 
 
-sealed abstract class Index(file: File){
+sealed abstract class Index(file: File) extends Serializable{
   def this(path:String){
     this(new File(path))
   }
   val handler: File
-  override def toString: String = s"index.Index of ${handler.getAbsolutePath}"
+  val path: String
+  override def toString: String = s"index.Index of $path"
   def find(name: String): List[_ <: Index] = {
 
    List(this).filter(_.handler.getName==name)
@@ -23,27 +25,27 @@ sealed abstract class Index(file: File){
 
 }
 
-case class FileIndex(private val file: File) extends Index(file){
+case class FileIndex(private val file: File)(private implicit val homeDirPath: String) extends Index(file) {
   override val handler: File =  {
     if(!file.exists || file.isDirectory) throw NotAFileException(file)
     file
   }
-  def manifesto(implicit chunkSize: Int) = FileManifesto(handler, chunkSize)
+  override val path: String = Paths.get(homeDirPath).relativize(Paths.get(handler.getCanonicalPath)).toString
 }
 
 object FileIndex{
-  def apply(fileName: String): FileIndex = FileIndex(new File(fileName))
+  def apply(fileName: String)(implicit homeDirPath:String): FileIndex = FileIndex(new File(fileName))(homeDirPath)
 }
 
-case class DirectoryIndex(private val directory: File) extends Index(directory) {
+case class DirectoryIndex(private val directory: File)(private implicit val homeDirPath: String) extends Index(directory) {
 
   override val handler: File = {
     if(!directory.exists || directory.isFile) throw NotADirectoryException(directory)
     directory
   }
-
-  def subFiles: List[FileIndex] = handler.listFiles.filter(_.isFile).map(FileIndex(_)).toList
-  def subDirectories: List[DirectoryIndex] = handler.listFiles.filter(_.isDirectory).map(DirectoryIndex(_)).toList
+  override val path: String = Paths.get(homeDirPath).relativize(Paths.get(handler.getCanonicalPath)).toString
+  val subFiles: List[FileIndex] = handler.listFiles.filter(_.isFile).map(FileIndex(_)(homeDirPath)).toList
+  val subDirectories: List[DirectoryIndex] = handler.listFiles.filter(_.isDirectory).map(DirectoryIndex(_)(homeDirPath)).toList
 
   override def find(fileName: String):List[_ <: Index] = {
     (subFiles ++ subDirectories).map(_.find(fileName)).fold(super.find(fileName))(_ ++ _)
@@ -51,7 +53,7 @@ case class DirectoryIndex(private val directory: File) extends Index(directory) 
 }
 
 object DirectoryIndex{
-  def apply(directoryName: String): DirectoryIndex = DirectoryIndex(new File(directoryName))
+  def apply(directoryName: String)(implicit homeDirPath:String): DirectoryIndex = DirectoryIndex(new File(directoryName))(homeDirPath)
 }
 
 

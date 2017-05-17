@@ -30,16 +30,15 @@ class FileBuilder(fileManifesto: FileManifesto)(implicit homeDirPath: String) {
 
 
   def build(): Unit = {
-    println("Building started")
-    var name = fileManifesto.name
+    var name = fileManifesto.fileIndex.path
     val newFile = new File(homeDirPath+"/"+name)
+    newFile.getParentFile.mkdirs()
     val writer = new BufferedOutputStream(new FileOutputStream(newFile))
 
     (0 until fileManifesto.chunkCount)
       .foreach { i => writer.write(chunks.filter(_.id == i).head.content) }
 
     writer.close()
-    println("Building ended")
   }
 
 }
