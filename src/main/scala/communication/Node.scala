@@ -14,7 +14,7 @@ import index.{DirectoryIndex, FileIndex}
 /**
   * Created by marcin on 5/8/17.
   */
-class Node(chunkSize: Int, implicit val homeDirPath: String) extends Actor {
+private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Actor {
   implicit val timeout: FiniteDuration = FiniteDuration(1, SECONDS)
 //  val spokesman: ActorRef = context.system.actorOf(Props[Spokesman], name = "spokesman")
   def directoryIndex() = DirectoryIndex(homeDirPath)
@@ -40,4 +40,9 @@ class Node(chunkSize: Int, implicit val homeDirPath: String) extends Actor {
       val uploader = context.system.actorOf(
         UploaderActor.props(sender, fileManifesto))
   }
+}
+
+object Node{
+  val defaultSize = 1048576
+  def props(homeDirPath: String)(implicit chunkSize:Int = defaultSize) = Props(new Node(chunkSize, homeDirPath))
 }
