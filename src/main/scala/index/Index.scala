@@ -1,14 +1,14 @@
-package index
-
-import java.io.File
-import java.nio.file.Paths
-
-import util.{NotADirectoryException, NotAFileException}
-import communication.FileManifesto
-
 /**
   * Created by marcin on 5/4/17.
   */
+package index
+
+import java.io.File
+import java.nio.file.{Files, Paths}
+
+import util.{NotADirectoryException, NotAFileException}
+
+
 
 
 sealed abstract class Index(file: File) extends Serializable{
@@ -31,6 +31,9 @@ case class FileIndex(private val file: File)(private implicit val homeDirPath: S
     file
   }
   override val path: String = Paths.get(homeDirPath).relativize(Paths.get(handler.getCanonicalPath)).toString
+  val writable: Boolean = Files.isWritable(handler.toPath)
+  val readable: Boolean = Files.isReadable(handler.toPath)
+  val executable: Boolean = Files.isExecutable(handler.toPath)
 }
 
 object FileIndex{
