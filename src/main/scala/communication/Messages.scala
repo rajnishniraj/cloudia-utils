@@ -9,7 +9,7 @@ import io.Chunkifier
   * Created by marcin on 5/8/17.
   */
 
-case class Handshake() extends Serializable
+case class Ping() extends Serializable
 
 case class Request[T](element: T) extends Serializable
 

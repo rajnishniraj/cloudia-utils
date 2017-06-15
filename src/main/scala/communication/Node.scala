@@ -21,7 +21,7 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
 
   override def receive: Receive = {
 
-    case Handshake() =>
+    case Ping() =>
       sender ! directoryIndex()
 
     case Request(fileIndex: FileIndex) =>
