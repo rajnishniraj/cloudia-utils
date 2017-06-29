@@ -3,11 +3,9 @@ package communication
 import java.io.File
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.testkit.{ImplicitSender, TestActors, TestKit}
+import akka.testkit.{ImplicitSender, TestKit}
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
-import index.{DirectoryIndex, FileIndex, Index}
-
-import scala.concurrent.duration.{Duration, SECONDS}
+import index.{DirectoryIndex, FileIndex}
 
 /**
   * Created by mike on 6/29/17.

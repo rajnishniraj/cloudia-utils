@@ -2,10 +2,6 @@ package io
 
 import java.io.File
 import java.nio.file.{Path, Files}
-
-import akka.util.ByteString
-
-import scala.io.Source
 import scala.math.ceil
 
 
@@ -14,7 +10,7 @@ import scala.math.ceil
   */
 case class Chunk(id: Int, content: Array[Byte]) extends Serializable
 
-
+/** Slices files into chunks of given size, counts chunks in file. **/
 object Chunkifier {
 
   def apply(implicit chunkSize: Int, file: File): List[Chunk] = {

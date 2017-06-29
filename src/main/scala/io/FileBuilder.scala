@@ -9,6 +9,11 @@ import scala.collection.mutable.ListBuffer
 /**
   * Created by marcin on 5/10/17.
   */
+/** Builds file from Chunks.
+  *
+  * @param fileManifest manifest of file's chunks
+  * @param homeDirPath  path to home directory of given file in filesystem
+  */
 class FileBuilder(fileManifest: FileManifest)(implicit homeDirPath: String) {
 
   private val chunksBuffer: ListBuffer[Chunk] = ListBuffer()

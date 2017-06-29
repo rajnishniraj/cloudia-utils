@@ -16,6 +16,12 @@ import scala.util.control.Exception.ignoring
 
 import communication._
 
+/** Akka's actor for downloading file from another node.
+  *
+  * @param fileManifest    manifest of file's chunks
+  * @param timeoutDuration timeout after which downloading will be cancelled
+  * @param homeDirPath     path to home directory of given file in filesystem
+  */
 private class DownloaderActor(fileManifest: FileManifest, timeoutDuration: FiniteDuration)
                              (implicit homeDirPath: String)
   extends Actor {
@@ -50,6 +56,7 @@ private class DownloaderActor(fileManifest: FileManifest, timeoutDuration: Finit
   }
 }
 
+/** Companion object for creating Props representation of DownloaderActor **/
 object DownloaderActor {
   def props(fileManifesto: FileManifest, timeoutDuration: FiniteDuration)
            (implicit homeDirPath: String): Props = {

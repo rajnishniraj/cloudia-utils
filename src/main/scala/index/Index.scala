@@ -8,7 +8,10 @@ import java.nio.file.{Files, Paths}
 
 import util.{NotADirectoryException, NotAFileException}
 
-
+/** Abstraction over File for unifying Files and Directories
+  *
+  * @param file handler
+  */
 sealed abstract class Index(file: File) extends Serializable {
   def this(path: String) {
     this(new File(path))
@@ -25,6 +28,11 @@ sealed abstract class Index(file: File) extends Serializable {
 
 }
 
+/** Represents regular files.
+  *
+  * @param file        handler
+  * @param homeDirPath path to home directory in file system containing this file
+  */
 case class FileIndex(private val file: File)(private implicit val homeDirPath: String) extends Index(file) {
   override val handler: File = {
     if (!file.exists || file.isDirectory) throw NotAFileException(file)
@@ -40,8 +48,12 @@ object FileIndex {
   def apply(fileName: String)(implicit homeDirPath: String): FileIndex = FileIndex(new File(fileName))(homeDirPath)
 }
 
+/** Represents directory files.
+  *
+  * @param directory   file handler
+  * @param homeDirPath path to home directory in file system containing this directory
+  */
 case class DirectoryIndex(private val directory: File)(private implicit val homeDirPath: String) extends Index(directory) {
-
   override val handler: File = {
     if (!directory.exists || directory.isFile) throw NotADirectoryException(directory)
     directory

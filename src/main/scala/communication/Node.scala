@@ -1,6 +1,7 @@
+/**
+  * Created by marcin on 5/8/17.
+  */
 package communication
-
-import java.io.File
 
 import akka.actor._
 import io.{DownloaderActor, UploaderActor}
@@ -10,9 +11,10 @@ import java.util.concurrent.TimeUnit.SECONDS
 
 import index.{DirectoryIndex, FileIndex}
 
-
-/**
-  * Created by marcin on 5/8/17.
+/** Akka Node that can act both as uploader and downloader.
+  *
+  * @param chunkSize   chunk size for files managed by node
+  * @param homeDirPath path to home directory of node
   */
 private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Actor {
   implicit val timeout: FiniteDuration = FiniteDuration(1, SECONDS)
@@ -28,7 +30,6 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
       val path = homeDirPath + "/" + fileIndex.path
       sender ! FileManifest(fileIndex, chunkSize)
 
-
     case fileManifest: FileManifest =>
       val downloader = context.system.actorOf(DownloaderActor.props(fileManifest, timeout))
       println(downloader.path)
@@ -41,6 +42,7 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
   }
 }
 
+/** Companion object of Node for creating instantiating Props for Akka  **/
 object Node {
   val defaultSize = 1048576
 
