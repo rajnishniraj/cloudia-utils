@@ -16,15 +16,13 @@ import scala.util.control.Exception.ignoring
 
 import communication._
 
-private class DownloaderActor(fileManifesto: FileManifest, timeoutDuration: FiniteDuration)
+private class DownloaderActor(fileManifest: FileManifest, timeoutDuration: FiniteDuration)
                              (implicit homeDirPath: String)
   extends Actor {
   val uploaders: ListBuffer[ActorRef] = ListBuffer()
-  val builder = new FileBuilder(fileManifesto)
+  val builder = new FileBuilder(fileManifest)
   implicit val timeout = Timeout(timeoutDuration)
   val spokesman: ActorSelection = context.system.actorSelection("user/spokesman")
-  //  spokesman ! s"manifesto.chunksize = ${fileManifesto.chunkSize}"
-
 
   override def receive: PartialFunction[Any, Unit] = {
 

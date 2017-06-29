@@ -20,7 +20,6 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
   def directoryIndex() = DirectoryIndex(homeDirPath)
 
   override def receive: Receive = {
-
     case Ping() =>
       sender ! directoryIndex()
 
@@ -36,9 +35,9 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
       val confirmation = Confirmation(fileManifest)
       sender.tell(confirmation, downloader)
 
-    case Confirmation(fileManifesto) =>
+    case Confirmation(fileManifest) =>
       val uploader = context.system.actorOf(
-        UploaderActor.props(sender, fileManifesto))
+        UploaderActor.props(sender, fileManifest))
   }
 }
 

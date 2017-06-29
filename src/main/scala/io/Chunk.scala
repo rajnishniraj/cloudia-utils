@@ -22,11 +22,9 @@ object Chunkifier {
     val chunks = for (i <- 0 until chunksCount(file, chunkSize))
       yield Chunk(i, trySlice(src, i * chunkSize, (i + 1) * chunkSize))
     chunks.toList
-
   }
 
-  def chunksCount(file: File, chunkSize: Int): Int =
-    ceil(file.length.toDouble / chunkSize).toInt
+  def chunksCount(file: File, chunkSize: Int): Int = ceil(file.length.toDouble / chunkSize).toInt
 
   private def trySlice(implicit src: Array[Byte], from: Int, to: Int) = {
     try {

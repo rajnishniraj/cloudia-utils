@@ -20,7 +20,6 @@ sealed abstract class Index(file: File) extends Serializable {
   override def toString: String = s"index.Index of $path"
 
   def find(name: String): List[_ <: Index] = {
-
     List(this).filter(_.handler.getName == name)
   }
 
@@ -57,7 +56,9 @@ case class DirectoryIndex(private val directory: File)(private implicit val home
 }
 
 object DirectoryIndex {
-  def apply(directoryName: String)(implicit homeDirPath: String): DirectoryIndex = DirectoryIndex(new File(directoryName))(homeDirPath)
+  def apply(directoryName: String)(implicit homeDirPath: String): DirectoryIndex = {
+    DirectoryIndex(new File(directoryName))(homeDirPath)
+  }
 }
 
 
