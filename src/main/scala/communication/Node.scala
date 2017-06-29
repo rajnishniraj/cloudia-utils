@@ -16,7 +16,7 @@ import index.{DirectoryIndex, FileIndex}
   */
 private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Actor {
   implicit val timeout: FiniteDuration = FiniteDuration(1, SECONDS)
-//  val spokesman: ActorRef = context.system.actorOf(Props[Spokesman], name = "spokesman")
+
   def directoryIndex() = DirectoryIndex(homeDirPath)
 
   override def receive: Receive = {
@@ -27,13 +27,13 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
     case Request(fileIndex: FileIndex) =>
       println(s"Request for ${fileIndex.path}")
       val path = homeDirPath + "/" + fileIndex.path
-      sender ! FileManifesto(fileIndex, chunkSize)
+      sender ! FileManifest(fileIndex, chunkSize)
 
 
-    case fileManifesto: FileManifesto =>
-      val downloader = context.system.actorOf(DownloaderActor.props(fileManifesto,timeout))
+    case fileManifest: FileManifest =>
+      val downloader = context.system.actorOf(DownloaderActor.props(fileManifest, timeout))
       println(downloader.path)
-      val confirmation = Confirmation(fileManifesto)
+      val confirmation = Confirmation(fileManifest)
       sender.tell(confirmation, downloader)
 
     case Confirmation(fileManifesto) =>
@@ -42,7 +42,8 @@ private class Node(chunkSize: Int, implicit val homeDirPath: String) extends Act
   }
 }
 
-object Node{
+object Node {
   val defaultSize = 1048576
-  def props(homeDirPath: String)(implicit chunkSize:Int = defaultSize) = Props(new Node(chunkSize, homeDirPath))
+
+  def props(homeDirPath: String)(implicit chunkSize: Int = defaultSize) = Props(new Node(chunkSize, homeDirPath))
 }

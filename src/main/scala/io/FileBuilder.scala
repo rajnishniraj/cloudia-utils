@@ -2,14 +2,14 @@ package io
 
 import java.io.{BufferedOutputStream, File, FileOutputStream}
 
-import communication.FileManifesto
+import communication.FileManifest
 
 import scala.collection.mutable.ListBuffer
 
 /**
   * Created by marcin on 5/10/17.
   */
-class FileBuilder(fileManifesto: FileManifesto)(implicit homeDirPath: String) {
+class FileBuilder(fileManifesto: FileManifest)(implicit homeDirPath: String) {
 
   private val chunksBuffer: ListBuffer[Chunk] = ListBuffer()
 
@@ -31,7 +31,7 @@ class FileBuilder(fileManifesto: FileManifesto)(implicit homeDirPath: String) {
 
   def build(): Unit = {
     val name = fileManifesto.fileIndex.path
-    val newFile = new File(homeDirPath+"/"+name)
+    val newFile = new File(homeDirPath + "/" + name)
     newFile.getParentFile.mkdirs()
     val writer = new BufferedOutputStream(new FileOutputStream(newFile))
 

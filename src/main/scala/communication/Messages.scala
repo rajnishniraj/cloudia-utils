@@ -13,9 +13,9 @@ case class Ping() extends Serializable
 
 case class Request[T](element: T) extends Serializable
 
-case class Confirmation(fileManifesto: FileManifesto) extends Serializable
+case class Confirmation(fileManifesto: FileManifest) extends Serializable
 
-case class FileManifesto(fileIndex: FileIndex, implicit val chunkSize: Int) extends Serializable {
+case class FileManifest(fileIndex: FileIndex, implicit val chunkSize: Int) extends Serializable {
   val chunkCount: Int = Chunkifier.chunksCount(fileIndex.handler, chunkSize)
 }
 

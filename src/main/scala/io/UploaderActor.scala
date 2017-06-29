@@ -1,13 +1,13 @@
 package io
 
 import akka.actor._
-import communication.{FileManifesto, Request}
+import communication.{FileManifest, Request}
 
 /**
   * Created by marcin on 5/7/17.
   */
 
-private class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifesto)(implicit homeDirPath: String) extends Actor {
+private class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManifest)(implicit homeDirPath: String) extends Actor {
   override def preStart(): Unit = {
     Chunkifier(fileManifesto.chunkSize, fileManifesto.fileIndex.handler).foreach {
       chunk =>
@@ -24,9 +24,9 @@ private class UploaderActor(downloaderActor: ActorRef, fileManifesto: FileManife
 
 }
 
-object UploaderActor{
-  def props(downloaderActor: ActorRef, fileManifesto: FileManifesto)
-           (implicit homeDirPath:String):Props ={
+object UploaderActor {
+  def props(downloaderActor: ActorRef, fileManifesto: FileManifest)
+           (implicit homeDirPath: String): Props = {
     Props(new UploaderActor(downloaderActor, fileManifesto))
   }
 }
