@@ -1,5 +1,6 @@
 /**
   * Created by marcin on 5/4/17.
+  * Welcome Rajnish
   */
 package index
 
@@ -72,9 +73,3 @@ object DirectoryIndex {
     DirectoryIndex(new File(directoryName))(homeDirPath)
   }
 }
-
-
-
-
-
-
